@@ -57,8 +57,8 @@ class RoleAuth extends AbstractHelper
             );
         }
 
-        //super admin should bypass team authority
-        if ($this->isSuper()) {
+        // Being admin should be enough, doesn't need to be super admin
+        if ($this->isGlobAdmin()) {
             return true;
         }
 
