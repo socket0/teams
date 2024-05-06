@@ -1,6 +1,8 @@
 <?php
 namespace Teams;
 
+//TODO: Possible to make Team Filter Off/On setting sticky?
+
 use Collecting\Api\Adapter\CollectingItemAdapter;
 use Omeka\Api\Adapter\AssetAdapter;
 use Omeka\Api\Adapter\UserAdapter;
@@ -292,6 +294,10 @@ SQL;
             Acl::ROLE_EDITOR,
             Acl::ROLE_RESEARCHER,
             Acl::ROLE_REVIEWER
+        ];
+
+        $teamRoles = [
+
         ];
 
         //added--this gives an author user the ability to see their own group and which groups items belong to
@@ -1705,12 +1711,14 @@ SQL;
 
         if ($operation == 'update') {
             $resource_id = $request->getId();
-            foreach ($request->getContent()['remove_team'] as $team_id) {
-                if ($teamAuth->teamAuthorized($this->getUser(),'delete', 'resource', $team_id)) {
-                    $team_resource = $em->getRepository('Teams\Entity\TeamResource')
-                        ->findOneBy(['team' => $team_id, 'resource'=>$resource_id]);
-                    if ($team_resource) {
-                        $em->remove($team_resource);
+            if (array_key_exists('remove_team', $request->getContent())) {
+                foreach ($request->getContent()['remove_team'] as $team_id) {
+                    if ($teamAuth->teamAuthorized($this->getUser(), 'delete', 'resource', $team_id)) {
+                        $team_resource = $em->getRepository('Teams\Entity\TeamResource')
+                            ->findOneBy(['team' => $team_id, 'resource' => $resource_id]);
+                        if ($team_resource) {
+                            $em->remove($team_resource);
+                        }
                     }
                 }
             }
